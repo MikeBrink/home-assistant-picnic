@@ -35,7 +35,7 @@ DELIVERY_TIME_SLOT_NAME = "picnic_delivery_time_slots"
 ATTRIBUTION = "Information provided by Picnic.app"
 
 ATTR_ATTRIBUTION = "attribution"
-ATTR_DELIVERIES = "deliveries"
+ATTR_DELIVERY = "delivery"
 ATTR_TIME_SLOTS = "time_slots"
 ATTR_PRICE = "price"
 
@@ -143,36 +143,36 @@ class DeliverySensor(Entity):
         self._data = data
         self._attributes = {
             ATTR_ATTRIBUTION: ATTRIBUTION,
-            ATTR_DELIVERIES: [],
+            ATTR_DELIVERY: [],
         }
 
-    # updaten met current_delivery
-    # self.id = data.get("id")
-    # self.status = data.get("status").lower()
-    # self.date = date.strftime("%Y-%m-%d")
-    # self.time = data.get("delivery").get("time")
-    # self.start_time = datetime.fromtimestamp(int(data.get("delivery").get("startDateTime")) / 1000)
-    # self.end_time = datetime.fromtimestamp(int(data.get("delivery").get("endDateTime")) / 1000)
-    # self.cut_off_date = datetime.fromtimestamp(int(details.get("orderCutOffDate")) / 1000)
-    # self.price = Price(data.get("prices").get("total"))
     async def async_update(self):
         """Update the sensor"""
         await self._data.async_update()
 
-        self._attributes[ATTR_DELIVERIES] = []
+        self._attributes[ATTR_DELIVERY] = {}
         self._state = None
 
-        deliveries = self._data.current_deliveries
+        delivery = self._data.current_deliveries[0]
 
-        for delivery in deliveries:
-            # TODO: Not happy with this solution
-            if not isinstance(delivery.price, dict):
-                p = vars(delivery.price)
-                delivery.price = p
-            self._attributes[ATTR_DELIVERIES].append(vars(delivery))
+        data = {}
+        data["creation_time"] = delivery["creation_time"]
+        data["delivery_id"] = delivery["delivery_id"]
+        data.update(delivery["slot"])
 
-        if len(deliveries) > 0:
-            first = next(iter(deliveries))
+        if "eta2" in delivery:
+            data["window_start"] = delivery["eta2"]["start"]
+            data["window_end"] = delivery["eta2"]["end"]
+
+        self._attributes[ATTR_DELIVERY] = data
+
+        for time in SLOT_TIMES:
+            self._attributes[ATTR_DELIVERY][time] = datetime.fromisoformat(
+                self.attributes[ATTR_DELIVERY][time]
+            )
+
+        if len(delivery) > 0:
+            first = delivery["window_start"]
             self._state = first.status.lower()
         else:
             self._state = None
