@@ -1,3 +1,5 @@
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
+
 # Home Assistant component for Picnic.app
 
 Provides Home Assistant sensors for Picnic (Supermarket) based on the [python-picnic-api](https://github.com/MikeBrink/python-picnic-api) repository.

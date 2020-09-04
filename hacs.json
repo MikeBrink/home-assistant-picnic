@@ -1,0 +1,6 @@
+{
+    "name": "picnic",
+    "domains": ["sensor"],
+    "country": ["NL", "DE"],
+    "iot_class": "Cloud Polling"
+}
