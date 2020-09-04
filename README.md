@@ -1,6 +1,9 @@
+# Home Assistant component for Picnic.app
+
+[![BuyMeCoffee][buymecoffeebadge]][buymecoffee]
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
 
-# Home Assistant component for Picnic.app
+## This library is still in development
 
 Provides Home Assistant sensors for Picnic (Supermarket) based on the [python-picnic-api](https://github.com/MikeBrink/python-picnic-api) repository.
 
@@ -41,4 +44,6 @@ logger:
       custom_components.picnic: debug
 ```
 
-# This library is still in development
+
+[buymecoffee]: https://www.buymeacoffee.com/MikeBrink
+[buymecoffeebadge]: https://camo.githubusercontent.com/cd005dca0ef55d7725912ec03a936d3a7c8de5b5/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f6275792532306d6525323061253230636f666665652d646f6e6174652d79656c6c6f772e737667
