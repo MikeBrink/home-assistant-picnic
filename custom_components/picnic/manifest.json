@@ -3,5 +3,5 @@
     "name": "Picnic Sensor",
     "documentation": "https://github.com/MikeBrink/home-assistant-picnic",
     "codeowners": ["@MikeBrink"],
-    "requirements": ["python-picnic-api"]
+    "requirements": ["python-picnic-api==0.2.2"]
 }
