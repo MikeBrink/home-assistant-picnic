@@ -29,10 +29,13 @@ You will have three sensors available.
 The sensor `picnic_basket` indicates how many items you still have within your basket. Within the more dialog window you will also see the outstanding costs that you have.
 
 #### Deliveries
-PLACEHOLDER
+The sensor picnic_delivery indicates the state of your next upcoming delivery. The state is either 'unknown' or the lower bound of the delivery time window. Within the attributes (more info dialog), you can also see other data.
 
 #### Time Slots
 The sensor `picnic_delivery_time_slots` indicates the first available delivery time slot. Within the attributes (more info dialog), you can also see all other available delivery time slots.
+
+## Automation Examples
+If you want a 24h warning before your delivery (A [Date & Time Sensor](https://www.home-assistant.io/integrations/time_date/) is required):
 
 ## Debugging
 If you experience unexpected output, please create an issue with additional logging. You can add the following lines to enable logging

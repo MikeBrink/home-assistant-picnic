@@ -176,7 +176,7 @@ class DeliverySensor(Entity):
             data["window_end"] = delivery["eta2"]["end"]
 
         for time in SLOT_TIMES:
-            if type(data[time]) == "str":
+            if isinstance(data[time], str):
                 data[time] = datetime.fromisoformat(data[time])
 
         self._attributes[ATTR_DELIVERY] = data
@@ -230,7 +230,7 @@ class DeliveryTimeSlotSensor(Entity):
 
         for slot in slots:
             for time in SLOT_TIMES:
-                if type(slot[time]) == "str":
+                if isinstance(slot[time], str):
                     slot[time] = datetime.fromisoformat(slot[time])
 
             self._attributes[ATTR_TIME_SLOTS].append(slot)
