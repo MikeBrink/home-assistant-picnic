@@ -2,6 +2,7 @@
 
 import logging
 from datetime import datetime, timedelta
+from functools import partial
 import voluptuous as vol
 
 import homeassistant.helpers.config_validation as cv
@@ -55,7 +56,11 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     password = config.get(CONF_PASSWORD)
     country_code = config.get(COUNTRY_CODE)
 
-    api = PicnicAPI(username=username, password=password, country_code=country_code)
+    api = await hass.async_add_executor_job(
+        partial(
+            PicnicAPI, username=username, password=password, country_code=country_code
+        )
+    )
     data = PicnicData(hass, config, api)
 
     entities = [CartSensor(data), DeliverySensor(data), DeliveryTimeSlotSensor(data)]
@@ -67,10 +72,11 @@ class PicnicData:
 
     def __init__(self, hass, config, api):
         """Initialize the data object"""
+        # try
         self._api = api
         self.hass = hass
         self.cart = None
-        self.open_deliveries = {}
+        self.current_deliveries = {}
         self.open_delivery_time_slots = {}
 
     @Throttle(MIN_TIME_BETWEEN_UPDATES)
@@ -153,7 +159,12 @@ class DeliverySensor(Entity):
         self._attributes[ATTR_DELIVERY] = {}
         self._state = None
 
-        delivery = self._data.current_deliveries[0]
+        delivery = self._data.current_deliveries
+
+        if not delivery:
+            return
+
+        delivery = delivery[0]
 
         data = {}
         data["creation_time"] = delivery["creation_time"]
@@ -164,18 +175,13 @@ class DeliverySensor(Entity):
             data["window_start"] = delivery["eta2"]["start"]
             data["window_end"] = delivery["eta2"]["end"]
 
+        for time in SLOT_TIMES:
+            if type(data[time]) == "str":
+                data[time] = datetime.fromisoformat(data[time])
+
         self._attributes[ATTR_DELIVERY] = data
 
-        for time in SLOT_TIMES:
-            self._attributes[ATTR_DELIVERY][time] = datetime.fromisoformat(
-                self.attributes[ATTR_DELIVERY][time]
-            )
-
-        if len(delivery) > 0:
-            first = delivery["window_start"]
-            self._state = first.status.lower()
-        else:
-            self._state = None
+        self._state = data["window_start"]
 
     @property
     def name(self):
@@ -214,18 +220,23 @@ class DeliveryTimeSlotSensor(Entity):
         """Update the sensor"""
         await self._data.async_update()
 
-        self._attributes[ATTR_TIME_SLOTS] = self._data.open_delivery_time_slots
+        self._attributes[ATTR_TIME_SLOTS] = []
         self._state = None
 
-        for time in SLOT_TIMES:
-            self._attributes[ATTR_TIME_SLOTS][time] = datetime.fromisoformat(
-                self.attributes[ATTR_TIME_SLOTS][time]
-            )
+        slots = self._data.open_delivery_time_slots
+
+        if not slots:
+            return
+
+        for slot in slots:
+            for time in SLOT_TIMES:
+                if type(slot[time]) == "str":
+                    slot[time] = datetime.fromisoformat(slot[time])
+
+            self._attributes[ATTR_TIME_SLOTS].append(slot)
 
         if len(self._attributes[ATTR_TIME_SLOTS]) > 0:
             self._state = self._attributes[ATTR_TIME_SLOTS][0]["window_start"]
-        else:
-            self._state = None
 
     @property
     def name(self):
