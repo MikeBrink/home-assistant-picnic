@@ -12,4 +12,4 @@ Provides Home Assistant sensors for Picnic.app (Online Supermarket).
       country_code: "NL"              (optional) (Choose from "NL" or "DE")
 ```
 
-[For more information visit the repository.](https://raw.githubusercontent.com/MikeBrink/home-assistant-picnic/)
+[For more information visit the repository.](https://www.github.com/MikeBrink/home-assistant-picnic/)
