@@ -171,7 +171,7 @@ class DeliverySensor(Entity):
         data["delivery_id"] = delivery["delivery_id"]
         data.update(delivery["slot"])
 
-        if "eta2" in delivery:
+        if "eta2" in delivery.keys():
             data["window_start"] = delivery["eta2"]["start"]
             data["window_end"] = delivery["eta2"]["end"]
 
@@ -181,7 +181,7 @@ class DeliverySensor(Entity):
 
         self._attributes[ATTR_DELIVERY] = data
 
-        self._state = data["window_start"]
+        self._state = delivery['status']
 
     @property
     def name(self):
