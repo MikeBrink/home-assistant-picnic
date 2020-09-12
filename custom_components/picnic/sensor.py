@@ -87,7 +87,7 @@ class PicnicData:
     def _get_data(self):
         #        try:
         self.cart = self._api.get_cart()
-        self.current_deliveries = self._api.get_current_deliveries()
+        self.current_deliveries = self._api.get_deliveries()[0]
         self.open_delivery_time_slots = self.cart["delivery_slots"]
         _LOGGER.debug("Updated data from Picnic")
 
@@ -164,14 +164,12 @@ class DeliverySensor(Entity):
         if not delivery:
             return
 
-        delivery = delivery[0]
-
         data = {}
         data["creation_time"] = delivery["creation_time"]
         data["delivery_id"] = delivery["delivery_id"]
         data.update(delivery["slot"])
 
-        if "eta2" in delivery:
+        if "eta2" in delivery.keys():
             data["window_start"] = delivery["eta2"]["start"]
             data["window_end"] = delivery["eta2"]["end"]
 
@@ -181,7 +179,12 @@ class DeliverySensor(Entity):
 
         self._attributes[ATTR_DELIVERY] = data
 
-        self._state = data["window_start"]
+        if delivery["status"] == "COMPLETED":
+            self._state = "order_delivered"
+        elif "eta2" in delivery.keys():
+            self._state = "order_announced"
+        elif delivery["status"] == "CURRENT":
+            self._state = "order_placed"
 
     @property
     def name(self):

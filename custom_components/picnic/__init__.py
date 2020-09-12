@@ -1,1 +1,1 @@
-"""The picnic Component"""
+"""The Picnic Component"""
