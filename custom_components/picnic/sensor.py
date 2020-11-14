@@ -235,8 +235,8 @@ class DeliveryTimeSlotSensor(Entity):
             for time in SLOT_TIMES:
                 if isinstance(slot[time], str):
                     slot[time] = datetime.fromisoformat(slot[time])
-
-            self._attributes[ATTR_TIME_SLOTS].append(slot)
+            if slot['is_available']:
+                self._attributes[ATTR_TIME_SLOTS].append(slot)
 
         if len(self._attributes[ATTR_TIME_SLOTS]) > 0:
             self._state = self._attributes[ATTR_TIME_SLOTS][0]["window_start"]
