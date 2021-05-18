@@ -4,5 +4,6 @@
     "documentation": "https://github.com/MikeBrink/home-assistant-picnic",
     "issue_tracker": "https://github.com/MikeBrink/home-assistant-picnic/issues",
     "codeowners": ["@MikeBrink"],
+    "version": "v0.2.2",    
     "requirements": ["python-picnic-api==0.2.2"]
 }
